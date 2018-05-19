@@ -6,23 +6,23 @@ usage() {
 }
 
 backup() {
-    if ! [ "$ARCHIVE" == "-" ]; then
-        mkdir -p `dirname /backup/$ARCHIVE`
+    if ! [ "$archive" == "-" ]; then
+        mkdir -p `dirname /backup/$archive`
     fi
 
-    tar -cjf $ARCHIVE_PATH -C /volume ./
+    tar -caf $archive_path -C /volume ./
 }
 
 restore() {
-    if ! [ "$ARCHIVE" == "-" ]; then
-        if ! [ -e $ARCHIVE_PATH ]; then
-            echo "Archive file $ARCHIVE does not exist"
+    if ! [ "$archive" == "-" ]; then
+        if ! [ -e $archive_path ]; then
+            echo "Archive file $archive does not exist"
             exit 1
         fi
     fi
 
     rm -rf /volume/* /volume/..?* /volume/.[!.]*
-    tar -C /volume/ -xjf $ARCHIVE_PATH
+    tar -C /volume/ -xf $archive_path
 }
 
 # Needed because sometimes pty is not ready when executing docker-compose run
@@ -34,24 +34,23 @@ if [ $# -ne 2 ]; then
     usage
 fi
 
-OPERATION=$1
+operation=$1
+archive=$2
 
 if [ "$2" == "-" ]; then
-    ARCHIVE=$2
-    ARCHIVE_PATH=$ARCHIVE
+    archive_path=$archive
 else
-    ARCHIVE=${2%%.tar.bz2}.tar.bz2
-    ARCHIVE_PATH=/backup/$ARCHIVE
+    archive_path=/backup/$archive
 fi
 
-case "$OPERATION" in
-"backup" )
-backup
-;;
-"restore" )
-restore
-;;
-* )
-usage
-;;
+case "$operation" in
+    "backup" )
+        backup
+        ;;
+    "restore" )
+        restore
+        ;;
+    * )
+        usage
+        ;;
 esac
