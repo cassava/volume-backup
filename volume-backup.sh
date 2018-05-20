@@ -23,6 +23,9 @@ restore() {
 
     rm -rf /volume/* /volume/..?* /volume/.[!.]*
     tar -C /volume/ -xf $archive_path
+    if ! [ -z $RESTORE_OWNER ]; then
+        chown -R $RESTORE_OWNER /volume
+    fi
 }
 
 # Needed because sometimes pty is not ready when executing docker-compose run
